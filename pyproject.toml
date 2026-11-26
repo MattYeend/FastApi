@@ -1,6 +1,7 @@
 [project]
 name = "my-api"
 version = "1.0.0"
+description = "User and product management API"
 requires-python = ">=3.12"
 
 [tool.pytest.ini_options]
@@ -10,6 +11,7 @@ python_files = ["test_*.py"]
 [tool.ruff]
 line-length = 80
 target-version = "py312"
+extend-exclude = ["migrations/versions"]
 
 [tool.ruff.lint]
 select = [
@@ -17,8 +19,15 @@ select = [
     "F",
     "I",
     "B",
-    "UP"
+    "UP",
+    "S",
+    "SIM",
+    "PT",
+    "RUF"
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106"]
 
 [tool.ruff.format]
 quote-style = "double"
