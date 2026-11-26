@@ -1,9 +1,12 @@
 from decimal import Decimal
+from typing import Self
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class ProductCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
     name: str = Field(min_length=2, max_length=150)
 
     description: str | None = None
@@ -14,6 +17,8 @@ class ProductCreate(BaseModel):
 
 
 class ProductUpdate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
     name: str | None = Field(default=None, min_length=2, max_length=150)
 
     description: str | None = None
@@ -23,6 +28,14 @@ class ProductUpdate(BaseModel):
     )
 
     stock: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def reject_explicit_nulls(self) -> Self:
+        for field in ("name", "price", "stock"):
+            if field in self.model_fields_set and getattr(self, field) is None:
+                raise ValueError(f"{field} cannot be null")
+
+        return self
 
 
 class ProductResponse(BaseModel):
