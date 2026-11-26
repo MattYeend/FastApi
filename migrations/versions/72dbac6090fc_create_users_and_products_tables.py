@@ -1,4 +1,4 @@
-"""initial migration
+"""create users and products tables
 
 Revision ID: 72dbac6090fc
 Revises: 
