@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.api.routes import products, users
 from app.core.config import settings
+from app.core.exceptions import DomainError, domain_error_handler
 
 app = FastAPI(
     title=settings.app_name,
@@ -10,6 +11,7 @@ app = FastAPI(
     debug=settings.debug,
 )
 
+app.add_exception_handler(DomainError, domain_error_handler)
 
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(products.router, prefix="/api/v1")
