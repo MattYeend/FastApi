@@ -6,18 +6,20 @@ from app.schemas.product import ProductCreate, ProductUpdate
 
 
 class ProductRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_all(self, skip: int = 0, limit: int = 100):
-        statement = select(Product).offset(skip).limit(limit)
+    def get_all(self, skip: int = 0, limit: int = 100) -> list[Product]:
+        statement = (
+            select(Product).order_by(Product.id).offset(skip).limit(limit)
+        )
 
         return list(self.db.scalars(statement).all())
 
-    def get_by_id(self, product_id: int):
+    def get_by_id(self, product_id: int) -> Product | None:
         return self.db.get(Product, product_id)
 
-    def create(self, data: ProductCreate):
+    def create(self, data: ProductCreate) -> Product:
         product = Product(**data.model_dump())
 
         self.db.add(product)
@@ -26,7 +28,7 @@ class ProductRepository:
 
         return product
 
-    def update(self, product: Product, data: ProductUpdate):
+    def update(self, product: Product, data: ProductUpdate) -> Product:
         fields = data.model_dump(exclude_unset=True)
 
         for field, value in fields.items():
@@ -37,6 +39,6 @@ class ProductRepository:
 
         return product
 
-    def delete(self, product: Product):
+    def delete(self, product: Product) -> None:
         self.db.delete(product)
         self.db.commit()

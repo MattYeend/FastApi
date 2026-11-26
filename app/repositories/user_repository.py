@@ -6,23 +6,23 @@ from app.schemas.user import UserCreate, UserUpdate
 
 
 class UserRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_all(self, skip: int = 0, limit: int = 100):
-        statement = select(User).offset(skip).limit(limit)
+    def get_all(self, skip: int = 0, limit: int = 100) -> list[User]:
+        statement = select(User).order_by(User.id).offset(skip).limit(limit)
 
         return list(self.db.scalars(statement).all())
 
-    def get_by_id(self, user_id: int):
+    def get_by_id(self, user_id: int) -> User | None:
         return self.db.get(User, user_id)
 
-    def get_by_email(self, email: str):
+    def get_by_email(self, email: str) -> User | None:
         statement = select(User).where(User.email == email)
 
         return self.db.scalar(statement)
 
-    def create(self, data: UserCreate):
+    def create(self, data: UserCreate) -> User:
         user = User(**data.model_dump())
 
         self.db.add(user)
@@ -31,7 +31,7 @@ class UserRepository:
 
         return user
 
-    def update(self, user: User, data: UserUpdate):
+    def update(self, user: User, data: UserUpdate) -> User:
         fields = data.model_dump(exclude_unset=True)
 
         for field, value in fields.items():
@@ -42,6 +42,6 @@ class UserRepository:
 
         return user
 
-    def delete(self, user: User):
+    def delete(self, user: User) -> None:
         self.db.delete(user)
         self.db.commit()
