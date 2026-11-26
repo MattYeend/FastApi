@@ -4,14 +4,19 @@ from app.api.routes import products, users
 from app.core.config import settings
 from app.core.exceptions import DomainError, domain_error_handler
 from app.dependencies.auth import require_api_key
+from app.middleware.security_headers import SecurityHeadersMiddleware
 
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description="User and product management API",
     debug=settings.debug,
+    docs_url="/docs" if settings.debug else None,
+    redoc_url="/redoc" if settings.debug else None,
+    openapi_url="/openapi.json" if settings.debug else None,
 )
 
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_exception_handler(DomainError, domain_error_handler)
 
 app.include_router(
